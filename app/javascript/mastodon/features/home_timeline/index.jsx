@@ -7,7 +7,9 @@ import classNames from 'classnames';
 import { Helmet } from 'react-helmet';
 import { Link } from 'react-router-dom';
 
+import { List as ImmutableList } from 'immutable';
 import { connect } from 'react-redux';
+import { createSelector } from 'reselect';
 
 import { fetchAnnouncements, toggleShowAnnouncements } from 'mastodon/actions/announcements';
 import { IconWithBadge } from 'mastodon/components/icon_with_badge';
@@ -20,6 +22,8 @@ import Column from '../../components/column';
 import ColumnHeader from '../../components/column_header';
 import StatusListContainer from '../ui/containers/status_list_container';
 
+
+import { ExplorePrompt } from './components/explore_prompt';
 import ColumnSettingsContainer from './containers/column_settings_container';
 
 const messages = defineMessages({
@@ -28,12 +32,43 @@ const messages = defineMessages({
   hide_announcements: { id: 'home.hide_announcements', defaultMessage: 'Hide announcements' },
 });
 
+const getHomeFeedSpeed = createSelector([
+  state => state.getIn(['timelines', 'home', 'items'], ImmutableList()).take(20).map(id => state.getIn(['statuses', id])),
+], statuses => {
+  const uniqueAccountIds = (new Set(statuses.map(status => status.get('account')).toArray())).size;
+
+  const precision = 20 * 60 * 1000; // 20 minutes
+
+  const frequency = Object.values(statuses.map(status => new Date(status.get('created_at'))).reduce((acc, cur) => {
+    const bucket = Math.floor(cur.getTime() / precision);
+
+    if (acc[bucket]) {
+      acc[bucket] += 1;
+    } else {
+      acc[bucket] = 1;
+    }
+
+    return acc;
+  }, {})).reduce((p, c, i) => p + (c - p) / (i + 1), 0);
+
+  return {
+    unique: uniqueAccountIds,
+    frequency,
+    last: new Date(statuses.getIn([0, 'created_at'], 0)),
+  };
+});
+
+const homeTooSlow = createSelector(getHomeFeedSpeed, speed =>
+  speed.unique < 7 || speed.frequency < 5 || (Date.now() - speed.last) > (1000 * 60 * 60)
+);
+
 const mapStateToProps = state => ({
   hasUnread: state.getIn(['timelines', 'home', 'unread']) > 0,
   isPartial: state.getIn(['timelines', 'home', 'isPartial']),
   hasAnnouncements: !state.getIn(['announcements', 'items']).isEmpty(),
   unreadAnnouncements: state.getIn(['announcements', 'items']).count(item => !item.get('read')),
   showAnnouncements: state.getIn(['announcements', 'show']),
+  tooSlow: homeTooSlow(state),
 });
 
 class HomeTimeline extends PureComponent {
@@ -52,6 +87,7 @@ class HomeTimeline extends PureComponent {
     hasAnnouncements: PropTypes.bool,
     unreadAnnouncements: PropTypes.number,
     showAnnouncements: PropTypes.bool,
+    tooSlow: PropTypes.bool,
   };
 
   handlePin = () => {
@@ -121,11 +157,11 @@ class HomeTimeline extends PureComponent {
   };
 
   render () {
-    const { intl, hasUnread, columnId, multiColumn, hasAnnouncements, unreadAnnouncements, showAnnouncements } = this.props;
+    const { intl, hasUnread, columnId, multiColumn, tooSlow, hasAnnouncements, unreadAnnouncements, showAnnouncements } = this.props;
     const pinned = !!columnId;
     const { signedIn } = this.context.identity;
 
-    let announcementsButton = null;
+    let announcementsButton, banner;
 
     if (hasAnnouncements) {
       announcementsButton = (
@@ -139,6 +175,10 @@ class HomeTimeline extends PureComponent {
           <IconWithBadge id='bullhorn' count={unreadAnnouncements} />
         </button>
       );
+    }
+
+    if (tooSlow) {
+      banner = <ExplorePrompt />;
     }
 
     return (
@@ -160,6 +200,7 @@ class HomeTimeline extends PureComponent {
 
         {signedIn ? (
           <StatusListContainer
+            prepend={banner}
             trackScroll={!pinned}
             scrollKey={`home_timeline-${columnId}`}
             onLoadMore={this.handleLoadMore}
