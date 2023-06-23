@@ -102,10 +102,10 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   config.vm.provider :virtualbox do |vb|
     vb.name = "mastodon"
-    vb.customize ["modifyvm", :id, "--memory", "2048"]
+    vb.customize ["modifyvm", :id, "--memory", "8192"]
     # Increase the number of CPUs. Uncomment and adjust to
     # increase performance
-    # vb.customize ["modifyvm", :id, "--cpus", "3"]
+    vb.customize ["modifyvm", :id, "--cpus", "3"]
 
     # Disable VirtualBox DNS proxy to skip long-delay IPv6 resolutions.
     # https://github.com/mitchellh/vagrant/issues/1172
@@ -141,6 +141,11 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.network :forwarded_port, guest: 3000, host: 3000
   config.vm.network :forwarded_port, guest: 4000, host: 4000
   config.vm.network :forwarded_port, guest: 8080, host: 8080
+  # ES
+  config.vm.network :forwarded_port, guest: 9200, host: 9200
+  config.vm.network :forwarded_port, guest: 9300, host: 9300
+  config.vm.network :forwarded_port, guest: 9243, host: 9243
+  config.vm.network :forwarded_port, guest: 5601, host: 5601
 
   # Full provisioning script, only runs on first 'vagrant up' or with 'vagrant provision'
   config.vm.provision :shell, inline: $provisionA, privileged: false, reset: true
