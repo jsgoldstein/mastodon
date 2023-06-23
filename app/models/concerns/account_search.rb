@@ -124,6 +124,17 @@ module AccountSearch
       end
     end
 
+    def searchable_text
+      PlainTextFormatter.new(note, local?).to_s if discoverable?
+    end
+
+    def searchable_properties
+      [].tap do |properties|
+        properties << 'bot' if bot?
+        properties << 'verified' if fields.any?(&:verified?)
+      end
+    end
+
     private
 
     def generate_query_for_search(unsanitized_terms)
