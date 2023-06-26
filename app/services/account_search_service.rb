@@ -71,13 +71,8 @@ class AccountSearchService < BaseService
   end
 
   def from_elasticsearch
-    must_clauses   = [
-      { multi_match: { query: terms_for_query, fields: %w(username username.* display_name display_name.* text text.*), type: 'best_fields', operator: 'or' } },
-    ]
-
-    should_clauses = [
-      { multi_match: { query: terms_for_query, fields: %w(username username.* display_name display_name.*), type: 'best_fields', operator: 'and', boost: 10 } },
-    ]
+    must_clauses   = must_clause
+    should_clauses = should_clause
 
     if account
       return [] if options[:following] && following_ids.empty?
@@ -135,6 +130,38 @@ class AccountSearchService < BaseService
         },
       },
     }
+  end
+
+  def must_clause
+    fields = %w(username username.* display_name display_name.*)
+    if options[:use_searchable_text]
+      fields << 'text' << 'text.*'
+    end
+
+    [
+      {
+        multi_match: {
+          query: terms_for_query,
+          fields: fields,
+          type: 'best_fields',
+          operator: 'or'
+        }
+      },
+    ]
+  end
+
+  def should_clause
+    [
+      {
+        multi_match: {
+          query: terms_for_query,
+          fields: %w(username username.* display_name display_name.*),
+          type: 'best_fields',
+          operator: 'and',
+          boost: 10
+        }
+      },
+    ]
   end
 
   def following_ids
