@@ -3,8 +3,6 @@
 source 'https://rubygems.org'
 ruby '>= 3.0.0'
 
-gem 'pkg-config', '~> 1.5'
-
 gem 'puma', '~> 6.3'
 gem 'rails', '~> 6.1.7'
 gem 'sprockets', '~> 3.7.2'
@@ -13,7 +11,6 @@ gem 'rack', '~> 2.2.7'
 
 gem 'haml-rails', '~>2.0'
 gem 'pg', '~> 1.5'
-gem 'makara', '~> 0.5'
 gem 'pghero'
 gem 'dotenv-rails', '~> 2.8'
 
@@ -161,7 +158,7 @@ group :development do
   gem 'letter_opener_web', '~> 2.0'
 
   # Security analysis CLI tools
-  gem 'brakeman', '~> 5.4', require: false
+  gem 'brakeman', '~> 6.0', require: false
   gem 'bundler-audit', '~> 0.9', require: false
 
   # Linter CLI for HAML files
