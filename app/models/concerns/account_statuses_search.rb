@@ -2,9 +2,9 @@
 
 module AccountStatusesSearch
   extend ActiveSupport::Concern
-  
+
   def update_statuses_index!
-    Chewy.strategy(:atomic) do
+    Chewy.strategy(:sidekiq) do
       StatusesIndex.import(query: Status.where(account_id: id))
     end
   end
