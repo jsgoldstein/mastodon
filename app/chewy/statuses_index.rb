@@ -71,6 +71,6 @@ class StatusesIndex < Chewy::Index
     end
 
     field(:searchable_by, type: 'long', value: ->(status, crutches) { status.searchable_by(crutches) })
-    field(:publicly_searchable, type: 'boolean', value: ->(status) {status.publicly_searchable?})
+    field(:publicly_searchable, type: 'boolean', value: ->(status) { status.publicly_searchable? })
   end
 end
