@@ -8,7 +8,7 @@ class StatusSearchService < BaseService
     @limit   = options[:limit].to_i
     @offset  = options[:offset].to_i
 
-    status_search_results
+    status_search_results if Chewy.enabled?
   end
 
   private
