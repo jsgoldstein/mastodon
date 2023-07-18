@@ -44,9 +44,9 @@ class SearchService < BaseService
       @account,
       limit: @limit,
       offset: @offset,
-      account_id: @options[:account_id].present? ? @options[:account_id] : nil,
-      min_id: @options[:min_id].present? ? @options[:min_id] : nil,
-      min_id: @options[:max_id].present? ? @options[:max_id] : nil
+      account_id: @options[:account_id].presence?,
+      min_id: @options[:min_id].presence?,
+      max_id: @options[:max_id].presence?
     )
   end
 

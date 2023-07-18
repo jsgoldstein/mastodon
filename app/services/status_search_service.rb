@@ -20,21 +20,21 @@ class StatusSearchService < BaseService
           {
             bool: {
               must: {
-                term: { publicly_searchable: false }
+                term: { publicly_searchable: false },
               },
               filter: {
-                term: { searchable_by: @account.id }
-              }
-            }
+                term: { searchable_by: @account.id },
+              },
+            },
           },
           {
             bool: {
               must: {
-                term: { publicly_searchable: true }
-              }
-            }
-          }
-        ]
+                term: { publicly_searchable: true },
+              },
+            },
+          },
+        ],
       }
     )
     definition = parsed_query.apply(base_query)
@@ -42,10 +42,10 @@ class StatusSearchService < BaseService
     definition = definition.filter(term: { account_id: @options[:account_id] }) if @options[:account_id].present?
 
     if @options[:min_id].present? || @options[:max_id].present?
-        range      = {}
-        range[:gt] = @options[:min_id].to_i if @options[:min_id].present?
-        range[:lt] = @options[:max_id].to_i if @options[:max_id].present?
-        definition = definition.filter(range: { id: range })
+      range      = {}
+      range[:gt] = @options[:min_id].to_i if @options[:min_id].present?
+      range[:lt] = @options[:max_id].to_i if @options[:max_id].present?
+      definition = definition.filter(range: { id: range })
     end
 
     results             = definition.limit(@limit).offset(@offset).objects.compact
