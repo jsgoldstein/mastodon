@@ -8,36 +8,13 @@ class StatusSearchService < BaseService
     @limit   = options[:limit].to_i
     @offset  = options[:offset].to_i
 
-    status_search_results if Chewy.enabled?
+    status_search_results
   end
 
   private
 
   def status_search_results
-    base_query = StatusesIndex.query(
-      bool: {
-        should: [
-          {
-            bool: {
-              must: {
-                term: { publicly_searchable: false },
-              },
-              filter: {
-                term: { searchable_by: @account.id },
-              },
-            },
-          },
-          {
-            bool: {
-              must: {
-                term: { publicly_searchable: true },
-              },
-            },
-          },
-        ],
-      }
-    )
-    definition = parsed_query.apply(base_query)
+    definition = get_definition
 
     definition = definition.filter(term: { account_id: @options[:account_id] }) if @options[:account_id].present?
 
@@ -56,6 +33,50 @@ class StatusSearchService < BaseService
     results.reject { |status| StatusFilter.new(status, @account, preloaded_relations).filtered? }
   rescue Faraday::ConnectionFailed, Parslet::ParseFailed
     []
+  end
+
+  def get_definition
+    non_publicly_searchable_clauses = non_publicly_searchable
+    publicly_searchable_clauses = publicly_searchable
+
+    filter = {
+      bool: {
+        should: [
+          non_publicly_searchable_clauses,
+          publicly_searchable_clauses,
+        ],
+        minimum_should_match: 1
+      }
+    }
+
+    query = StatusesIndex.query(filter)
+  end
+
+  def publicly_searchable
+    parsed_query.apply(
+      {
+        bool: {
+          must: [
+            { term: { publicly_searchable: true } },
+          ],
+        },
+      }
+    )
+  end
+
+  def non_publicly_searchable
+    parsed_query.apply(
+      {
+        bool: {
+          must: [
+            { term: { publicly_searchable: false } },
+          ],
+          filter: [
+            { term: { searchable_by: @account.id } },
+          ],
+        },
+      }
+    )
   end
 
   def parsed_query
