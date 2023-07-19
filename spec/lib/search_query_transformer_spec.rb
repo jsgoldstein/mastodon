@@ -18,7 +18,7 @@ describe SearchQueryTransformer do
 
   describe '#apply' do
     subject(:applied_query) do
-      described_class.new(
+      described_class.new.apply(
         SearchQueryParser.new.parse('query')
       ).apply(query)
     end
