@@ -14,7 +14,7 @@ class StatusSearchService < BaseService
   private
 
   def status_search_results
-    definition = get_definition
+    definition = search_definition
 
     definition = definition.filter(term: { account_id: @options[:account_id] }) if @options[:account_id].present?
 
@@ -35,7 +35,7 @@ class StatusSearchService < BaseService
     []
   end
 
-  def get_definition
+  def search_definition
     non_publicly_searchable_clauses = non_publicly_searchable
     publicly_searchable_clauses = publicly_searchable
 
@@ -45,8 +45,8 @@ class StatusSearchService < BaseService
           non_publicly_searchable_clauses,
           publicly_searchable_clauses,
         ],
-        minimum_should_match: 1
-      }
+        minimum_should_match: 1,
+      },
     }
 
     query = StatusesIndex.query(filter)
@@ -60,7 +60,7 @@ class StatusSearchService < BaseService
             { term: { publicly_searchable: true } },
           ],
         },
-      }
+      },
     )
   end
 
@@ -75,7 +75,7 @@ class StatusSearchService < BaseService
             { term: { searchable_by: @account.id } },
           ],
         },
-      }
+      },
     )
   end
 

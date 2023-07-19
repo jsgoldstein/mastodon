@@ -31,7 +31,7 @@ class SearchQueryTransformer < Parslet::Transform
       if must_not_clauses.present?
         query[:bool][:must_not] ||= []
 
-        query[:bool][:must_not] += must_clauses.map { |clause| clause_to_query(clause) }
+        query[:bool][:must_not] += must_not_clauses.map { |clause| clause_to_query(clause) }
       end
 
       if filter_clauses.present?
