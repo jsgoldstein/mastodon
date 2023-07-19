@@ -49,7 +49,7 @@ class StatusSearchService < BaseService
       },
     }
 
-    query = StatusesIndex.query(filter)
+    StatusesIndex.query(filter)
   end
 
   def publicly_searchable
@@ -60,7 +60,7 @@ class StatusSearchService < BaseService
             { term: { publicly_searchable: true } },
           ],
         },
-      },
+      }
     )
   end
 
@@ -75,7 +75,7 @@ class StatusSearchService < BaseService
             { term: { searchable_by: @account.id } },
           ],
         },
-      },
+      }
     )
   end
 
