@@ -65,7 +65,7 @@ describe SearchQueryTransformer do
 
     context 'when filter_clauses are present' do
       let(:search_term) { 'from:test_account' }
-      let(:account) { Fabricate(:account) }
+      let(:account) { Fabricate(:account, username: 'test_account', domain: 'example.com') }
 
       it 'adds filter clauses to the query' do
         expect(applied_query[:bool][:filter].length).to eq(1)
@@ -73,19 +73,44 @@ describe SearchQueryTransformer do
       end
     end
 
-    context 'when all clause lists are present' do
+    context 'when all clauses are present' do
       let(:should_term) { 'should' }
       let(:must_term) { '+must' }
       let(:must_not_term) { '-nope' }
       let(:filter_term) { 'from:test_account' }
-      let(:search_term) { "#{should_term}  #{must_term} #{must_not_term} #{filter_term}" }
-      let(:account) { Fabricate(:test_account) }
+      let(:search_term) { "#{should_term} #{must_term} #{must_not_term} #{filter_term}" }
+      let(:account) { Fabricate(:account, username: 'test_account', domain: 'example.com') }
 
       it 'adds all clauses to the query' do
         expect(applied_query[:bool][:should][0][:multi_match][:query]).to eq(should_term)
         expect(applied_query[:bool][:must][0][:multi_match][:query]).to eq(must_term[1..])
         expect(applied_query[:bool][:must_not][0][:multi_match][:query]).to eq(must_not_term[1..])
         expect(applied_query[:bool][:filter][0][:term][:account_id]).to eq(account.id)
+      end
+
+      it 'sets minimum_should_match to 1' do
+        expect(applied_query[:bool][:minimum_should_match]).to eq(1)
+      end
+    end
+
+    context 'when all clauses are present and query has all clauses too' do
+      let(:should_term) { 'should' }
+      let(:must_term) { '+must' }
+      let(:must_not_term) { '-nope' }
+      let(:filter_term) { 'from:test_account' }
+      let(:search_term) { "#{should_term} #{must_term} #{must_not_term} #{filter_term}" }
+      let(:query) { { bool: { should: [{ term: { exists: true } }], must: [{ term: { exists: true } }], must_not: [{ term: { exists: true } }], filter: [{ term: { exists: true } }] } } }
+      let(:account) { Fabricate(:account, username: 'test_account', domain: 'example.com') }
+
+      it 'adds all clauses to the arrays in the query' do
+        expect(applied_query[:bool][:should].length).to eq(2)
+        expect(applied_query[:bool][:must].length).to eq(2)
+        expect(applied_query[:bool][:must_not].length).to eq(2)
+        expect(applied_query[:bool][:filter].length).to eq(2)
+      end
+
+      it 'sets minimum_should_match to 1' do
+        expect(applied_query[:bool][:minimum_should_match]).to eq(1)
       end
     end
   end
