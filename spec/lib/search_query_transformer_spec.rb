@@ -19,25 +19,25 @@ describe SearchQueryTransformer do
   describe '#apply' do
     subject(:applied_query) do
       described_class.new.apply(
-        SearchQueryParser.new.parse('query')
+        SearchQueryParser.new.parse(search_term)
       ).apply(query)
     end
 
-    let(:query) { { bool: {} } }
-    let(:search_string) { 'search string' }
-    let(:term) { { term: { field_name: search_string } } }
+    let(:query) { }
+    let(:search_term) {  }
 
     context 'when query is just a bool' do
-      it 'does not modify the query' do
-        expect(applied_query).to eq(query)
+      it 'returns a hash of bool' do
+        expect(applied_query).to eq({ bool: {} })
       end
     end
 
     context 'when should_clauses are present' do
-      let(:should) { { bool: { should: [term] } } }
+      let(:search_term) { 'test' }
 
       it 'adds should clauses to the query' do
-        expect(applied_query[:bool][:should]).to include(term)
+        expect(applied_query[:bool][:should]).length eq(1)
+        expect(applied_query[:bool][:should][multi_match:][query:]).length eq(search_term)
       end
 
       it 'sets minimum_should_match to 1' do
@@ -46,26 +46,30 @@ describe SearchQueryTransformer do
     end
 
     context 'when must_clauses are present' do
-      let(:must) { { bool: { must: [term] } } }
+      let(:search_term) { '+test' }
 
       it 'adds must clauses to the query' do
-        expect(applied_query[:bool][:must]).to include(term)
+        expect(applied_query[:bool][:must]).length eq(1)
+        expect(applied_query[:bool][:must][multi_match:][query:]).length eq(search_term)
       end
     end
 
     context 'when must_not_clauses are present' do
-      let(:must_not) { { bool: { must_not: [term] } } }
+      let(:search_term) { '-test' }
 
       it 'adds must_not clauses to the query' do
-        expect(applied_query[:bool][:must_not]).to include(term)
+        expect(applied_query[:bool][:must_not]).length eq(1)
+        expect(applied_query[:bool][:must_not][multi_match:][query:]).length eq(search_term)
       end
     end
 
     context 'when filter_clauses are present' do
-      let(:filter) { { bool: { filter: [term] } } }
+      let(:search_term) { 'from:test_account' }
+      let(:account)  { Fabricate(:test_account) }
 
       it 'adds filter clauses to the query' do
-        expect(applied_query[:bool][:filter]).to include(term)
+        expect(applied_query[:bool][:filter]).length eq(1)
+        expect(applied_query[:bool][:filter][term:][account_id:]).length eq(account.id)
       end
     end
   end
