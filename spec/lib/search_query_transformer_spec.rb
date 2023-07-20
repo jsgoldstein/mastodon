@@ -23,7 +23,7 @@ describe SearchQueryTransformer do
       ).apply(query)
     end
 
-    let(:query) { bool: {} }
+    let(:query) { { bool: {} } }
     let(:search_term) { '' }
 
     context 'when query is just a bool' do
