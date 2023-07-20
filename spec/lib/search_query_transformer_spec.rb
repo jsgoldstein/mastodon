@@ -36,7 +36,7 @@ describe SearchQueryTransformer do
       let(:search_term) { 'test' }
 
       it 'adds should clauses to the query' do
-        expect(applied_query[:bool][:should]).length eq(1)
+        expect(applied_query[:bool][:should].length) eq(1)
         expect(applied_query[:bool][:should][:multi_match][:query]).to eq(search_term)
       end
 
@@ -49,7 +49,7 @@ describe SearchQueryTransformer do
       let(:search_term) { '+test' }
 
       it 'adds must clauses to the query' do
-        expect(applied_query[:bool][:must]).length eq(1)
+        expect(applied_query[:bool][:must].length) eq(1)
         expect(applied_query[:bool][:must][:multi_match][:query]).to eq(search_term)
       end
     end
@@ -58,7 +58,7 @@ describe SearchQueryTransformer do
       let(:search_term) { '-test' }
 
       it 'adds must_not clauses to the query' do
-        expect(applied_query[:bool][:must_not]).length eq(1)
+        expect(applied_query[:bool][:must_not].length) eq(1)
         expect(applied_query[:bool][:must_not][:multi_match][:query]).to eq(search_term)
       end
     end
@@ -68,7 +68,7 @@ describe SearchQueryTransformer do
       let(:account) { Fabricate(:test_account) }
 
       it 'adds filter clauses to the query' do
-        expect(applied_query[:bool][:filter]).length eq(1)
+        expect(applied_query[:bool][:filter].length) eq(1)
         expect(applied_query[:bool][:filter][:term][:account_id]).to eq(account.id)
       end
     end
