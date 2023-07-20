@@ -92,7 +92,7 @@ describe SearchQueryTransformer do
       end
 
       it 'sets minimum_should_match to 1' do
-        account = Fabricate(:account, username: 'test_account', domain: 'example.com')
+        Fabricate(:account, username: 'test_account', domain: 'example.com')
 
         expect(applied_query[:bool][:minimum_should_match]).to eq(1)
       end
@@ -107,7 +107,7 @@ describe SearchQueryTransformer do
       let(:query) { { bool: { should: [{ term: { exists: true } }], must: [{ term: { exists: true } }], must_not: [{ term: { exists: true } }], filter: [{ term: { exists: true } }] } } }
 
       it 'adds all clauses to the arrays in the query' do
-        account = Fabricate(:account, username: 'test_account', domain: 'example.com')
+        Fabricate(:account, username: 'test_account', domain: 'example.com')
 
         expect(applied_query[:bool][:should].length).to eq(2)
         expect(applied_query[:bool][:must].length).to eq(2)
@@ -116,7 +116,7 @@ describe SearchQueryTransformer do
       end
 
       it 'sets minimum_should_match to 1' do
-        account = Fabricate(:account, username: 'test_account', domain: 'example.com')
+        Fabricate(:account, username: 'test_account', domain: 'example.com')
 
         expect(applied_query[:bool][:minimum_should_match]).to eq(1)
       end
