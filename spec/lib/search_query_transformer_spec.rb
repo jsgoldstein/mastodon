@@ -37,7 +37,7 @@ describe SearchQueryTransformer do
 
       it 'adds should clauses to the query' do
         expect(applied_query[:bool][:should]).length eq(1)
-        expect(applied_query[:bool][:should][:multi_match][query:]).length eq(search_term)
+        expect(applied_query[:bool][:should][:multi_match][:query]).length eq(search_term)
       end
 
       it 'sets minimum_should_match to 1' do
@@ -50,7 +50,7 @@ describe SearchQueryTransformer do
 
       it 'adds must clauses to the query' do
         expect(applied_query[:bool][:must]).length eq(1)
-        expect(applied_query[:bool][:must][:multi_match][query:]).length eq(search_term)
+        expect(applied_query[:bool][:must][:multi_match][:query]).length eq(search_term)
       end
     end
 
@@ -59,7 +59,7 @@ describe SearchQueryTransformer do
 
       it 'adds must_not clauses to the query' do
         expect(applied_query[:bool][:must_not]).length eq(1)
-        expect(applied_query[:bool][:must_not][:multi_match][query:]).length eq(search_term)
+        expect(applied_query[:bool][:must_not][:multi_match][:query]).length eq(search_term)
       end
     end
 
@@ -69,7 +69,7 @@ describe SearchQueryTransformer do
 
       it 'adds filter clauses to the query' do
         expect(applied_query[:bool][:filter]).length eq(1)
-        expect(applied_query[:bool][:filter][:term][account_id:]).length eq(account.id)
+        expect(applied_query[:bool][:filter][:term][:account_id]).length eq(account.id)
       end
     end
   end
