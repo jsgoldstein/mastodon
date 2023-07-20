@@ -64,8 +64,8 @@ describe SearchQueryTransformer do
     end
 
     context 'when filter_clauses are present' do
-      let(:search_term) { 'from:test_account' }
-      # let(:account) { Fabricate(:account, username: 'test_account', domain: 'example.com') }
+      let(:search_term) { 'from:@test_account@example.com' }
+      let(:account) { Fabricate(:account, username: 'test_account', domain: 'example.com') }
 
       it 'adds filter clauses to the query' do
         expect(applied_query[:bool][:filter].length).to eq(1)
