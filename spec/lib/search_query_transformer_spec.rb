@@ -41,7 +41,7 @@ describe SearchQueryTransformer do
       end
 
       it 'sets minimum_should_match to 1' do
-        expect(applied_query[:minimum_should_match]).to eq(1)
+        expect(applied_query[:bool][:minimum_should_match]).to eq(1)
       end
     end
 
@@ -50,7 +50,7 @@ describe SearchQueryTransformer do
 
       it 'adds must clauses to the query' do
         expect(applied_query[:bool][:must].length).to eq(1)
-        expect(applied_query[:bool][:must][0][:multi_match][:query]).to eq(search_term)
+        expect(applied_query[:bool][:must][0][:multi_match][:query]).to eq(search_term[1..-1])
       end
     end
 
@@ -59,7 +59,7 @@ describe SearchQueryTransformer do
 
       it 'adds must_not clauses to the query' do
         expect(applied_query[:bool][:must_not].length).to eq(1)
-        expect(applied_query[:bool][:must_not][0][:multi_match][:query]).to eq(search_term)
+        expect(applied_query[:bool][:must_not][0][:multi_match][:query]).to eq(search_term[1..-1])
       end
     end
 
@@ -69,6 +69,22 @@ describe SearchQueryTransformer do
 
       it 'adds filter clauses to the query' do
         expect(applied_query[:bool][:filter].length).to eq(1)
+        expect(applied_query[:bool][:filter][0][:term][:account_id]).to eq(account.id)
+      end
+    end
+
+    context 'when all clause lists are present' do
+      let(:should) { 'should' }
+      let(:must) { '+must' }
+      let(:must_not) { '-nope' }
+      let(:filter) { 'from:test_account' }
+      let(:search_term) { should + ' ' + must + ' ' + must_not + ' ' + filter }
+      let(:account) { Fabricate(:test_account) }
+
+      it 'adds all clauses to the query' do
+        expect(applied_query[:bool][:should][0][:multi_match][:query]).to eq(should)
+        expect(applied_query[:bool][:must][0][:multi_match][:query]).to eq(must[1..-1])
+        expect(applied_query[:bool][:must_not][0][:multi_match][:query]).to eq(must_not[1..-1])
         expect(applied_query[:bool][:filter][0][:term][:account_id]).to eq(account.id)
       end
     end
