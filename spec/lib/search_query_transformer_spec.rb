@@ -23,12 +23,12 @@ describe SearchQueryTransformer do
       ).apply(query)
     end
 
-    let(:query) { }
-    let(:search_term) {  }
+    let(:query) { bool: {} }
+    let(:search_term) { '' }
 
     context 'when query is just a bool' do
       it 'returns a hash of bool' do
-        expect(applied_query).to eq({ bool: {} })
+        expect(applied_query).to eq({ query })
       end
     end
 
@@ -65,7 +65,7 @@ describe SearchQueryTransformer do
 
     context 'when filter_clauses are present' do
       let(:search_term) { 'from:test_account' }
-      let(:account)  { Fabricate(:test_account) }
+      let(:account) { Fabricate(:test_account) }
 
       it 'adds filter clauses to the query' do
         expect(applied_query[:bool][:filter]).length eq(1)
