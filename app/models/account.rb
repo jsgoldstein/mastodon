@@ -79,7 +79,6 @@ class Account < ApplicationRecord
   include DomainMaterializable
   include AccountMerging
   include AccountSearch
-  include AccountStatusesSearch
 
   enum protocol: { ostatus: 0, activitypub: 1 }
   enum suspension_origin: { local: 0, remote: 1 }, _prefix: true
@@ -132,7 +131,6 @@ class Account < ApplicationRecord
   scope :not_domain_blocked_by_account, ->(account) { where(arel_table[:domain].eq(nil).or(arel_table[:domain].not_in(account.excluded_from_timeline_domains))) }
 
   after_update_commit :trigger_update_webhooks
-  after_update :update_statuses_index!, if: :saved_change_to_discoverable? and Chewy.enabled?
 
   delegate :email,
            :unconfirmed_email,
