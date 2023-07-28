@@ -21,6 +21,7 @@ class Vacuum::StatusesVacuum
               .includes(mentions: :account)
               .find_each(&:unlink_from_conversations!)
       remove_from_search_index(statuses.ids) if Chewy.enabled?
+      remove_from_public_search_index(statuses.ids) if Chewy.enabled?
 
       # Foreign keys take care of most associated records for us.
       # Media attachments will be orphaned.
@@ -40,5 +41,9 @@ class Vacuum::StatusesVacuum
 
   def remove_from_search_index(status_ids)
     with_redis { |redis| redis.sadd('chewy:queue:StatusesIndex', status_ids) }
+  end
+
+  def remove_from_public_search_index(status_ids)
+    with_redis { |redis| redis.sadd('chewy:queue:PublicStatusesIndex', status_ids) }
   end
 end
