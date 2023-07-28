@@ -58,7 +58,7 @@ module BaseStatusIndexConfig
       votes: lambda do |collection|
         data = ::PollVote.joins(:poll).where(poll: { status_id: collection.map(&:id) }).where(account: Account.local).pluck(:status_id, :account_id)
         data.each.with_object({}) { |(id, name), result| (result[id] ||= []).push(name) }
-      end
+      end,
     }
   end
 end

@@ -12,7 +12,7 @@ class Importer::PublicStatusesIndexImporter < Importer::BaseImporter
                                 .joins(:account)
                                 .where(accounts: { discoverable: true })
                                 .where(id: status_ids)
-            Chewy::Index::Import::BulkBuilder.new(index, to_index: statuses).bulk_body
+            Chewy::Index::Import::BulkBuilder.new(index, to_index: status_data).bulk_body
           end
 
           indexed = 0
