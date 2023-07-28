@@ -25,6 +25,6 @@ class Scheduler::IndexingScheduler
   end
 
   def indexes
-    [AccountsIndex, TagsIndex, StatusesIndex]
+    [AccountsIndex, TagsIndex, PublicStatusesIndex, StatusesIndex]
   end
 end
