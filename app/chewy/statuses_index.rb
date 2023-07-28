@@ -67,7 +67,7 @@ class StatusesIndex < Chewy::Index
   extend BaseStatusIndexConfig
   include FormattingHelper
 
-  settings base_status_index_settings
+  base_status_index_settings
 
   # We do not use delete_if option here because it would call a method that we
   # expect to be called with crutches without crutches, causing n+1 queries
@@ -92,7 +92,7 @@ class PublicStatusesIndex < Chewy::Index
   extend BaseStatusIndexConfig
   include FormattingHelper
 
-  settings base_status_index_settings
+  base_status_index_settings
 
   # We do not use delete_if option here because it would call a method that we
   # expect to be called with crutches without crutches, causing n+1 queries
