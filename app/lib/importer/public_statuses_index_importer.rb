@@ -77,7 +77,8 @@ class Importer::PublicStatusesIndexImporter < Importer::BaseImporter
   end
 
   def local_votes_scope
-    Poll.joins(votes: { status: :account })
+    Poll.joins(:votes)
+        .joins(votes: { status: :account })
         .where(votes: { account: Account.local })
         .where(accounts: { discoverable: true })
         .where(statuses: { visibility: :public })
