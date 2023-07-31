@@ -453,7 +453,7 @@ class Account < ApplicationRecord
   before_validation :prepare_username, on: :create
   before_create :generate_keys
   before_destroy :clean_feed_manager
-  after_commit :enqueue_remove_from_public_status_index, on: :destroy
+  after_commit :enqueue_remove_from_public_statuses_index, on: :destroy
 
   def ensure_keys!
     return unless local? && private_key.blank? && public_key.blank?
