@@ -45,6 +45,6 @@ module AccountStatusesSearch
   def remove_from_public_statuses_index!
     return unless Chewy.enabled?
 
-    PublicStatusesIndex.filter(term: { account_id: id }).async.delete_all
+    PublicStatusesIndex.filter(term: { account_id: id }).delete_all
   end
 end
