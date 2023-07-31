@@ -23,6 +23,7 @@ class Vacuum::StatusesVacuum
       if Chewy.enabled?
         remove_from_index(statuses.ids, 'chewy:queue:StatusesIndex')
         remove_from_index(statuses.ids, 'chewy:queue:PublicStatusesIndex')
+      end
 
       # Foreign keys take care of most associated records for us.
       # Media attachments will be orphaned.
