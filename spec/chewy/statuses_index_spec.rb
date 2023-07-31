@@ -27,8 +27,8 @@ RSpec.describe 'Chewy indexes', type: :model do
     include_context 'with mock elasticsearch response'
 
     it 'has settings defined' do
-      expect(StatusesIndex).to respond_to(:settings)
-      expect(StatusesIndex.settings).to be_a(Chewy::Index::Settings)
+      expect(described_class).to respond_to(:settings)
+      expect(described_class.settings).to be_a(Chewy::Index::Settings)
     end
 
     it 'returns results from a query' do
@@ -41,8 +41,8 @@ RSpec.describe 'Chewy indexes', type: :model do
     include_context 'with mock elasticsearch response'
 
     it 'has settings defined' do
-      expect(PublicStatusesIndex).to respond_to(:settings)
-      expect(PublicStatusesIndex.settings).to be_a(Chewy::Index::Settings)
+      expect(described_class).to respond_to(:settings)
+      expect(described_class.settings).to be_a(Chewy::Index::Settings)
     end
 
     it 'returns results from a query' do
