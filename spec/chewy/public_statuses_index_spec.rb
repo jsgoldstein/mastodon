@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe StatusesIndex do
+RSpec.describe PublicStatusesIndex do
   describe 'Searching the index' do
     before do
       mock_elasticsearch_response(described_class, raw_response)
