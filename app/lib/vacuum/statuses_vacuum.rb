@@ -20,8 +20,9 @@ class Vacuum::StatusesVacuum
       statuses.direct_visibility
               .includes(mentions: :account)
               .find_each(&:unlink_from_conversations!)
-      remove_from_search_index(statuses.ids) if Chewy.enabled?
-      remove_from_public_search_index(statuses.ids) if Chewy.enabled?
+      if Chewy.enabled?
+        remove_from_index(statuses.ids, 'chewy:queue:StatusesIndex')
+        remove_from_index(statuses.ids, 'chewy:queue:PublicStatusesIndex')
 
       # Foreign keys take care of most associated records for us.
       # Media attachments will be orphaned.
@@ -39,11 +40,7 @@ class Vacuum::StatusesVacuum
     Mastodon::Snowflake.id_at(@retention_period.ago, with_random: false)
   end
 
-  def remove_from_search_index(status_ids)
-    with_redis { |redis| redis.sadd('chewy:queue:StatusesIndex', status_ids) }
-  end
-
-  def remove_from_public_search_index(status_ids)
-    with_redis { |redis| redis.sadd('chewy:queue:PublicStatusesIndex', status_ids) }
+  def remove_from_index(status_ids, index)
+    with_redis { |redis| redis.sadd(index, status_ids) }
   end
 end
