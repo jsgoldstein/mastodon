@@ -455,7 +455,6 @@ class Account < ApplicationRecord
   before_destroy :clean_feed_manager
   after_commit :enqueue_remove_from_public_statuses_index, on: :destroy, if: -> { Chewy.enabled? && discoverable? }
 
-
   def ensure_keys!
     return unless local? && private_key.blank? && public_key.blank?
 
