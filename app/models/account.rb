@@ -170,6 +170,10 @@ class Account < ApplicationRecord
     %w(Application Service).include? actor_type
   end
 
+  def undiscoverable?
+    !discoverable?
+  end
+
   def instance_actor?
     id == -99
   end
