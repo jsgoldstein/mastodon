@@ -5,7 +5,7 @@ class RemoveFromPublicStatusesIndexWorker
 
   def perform(account_id)
     account = Account.find(account_id)
-    return unless account&.undiscoverable?
+    return unless !account.discoverable?
 
     account.remove_from_public_statuses_index!
   end

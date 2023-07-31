@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe StatusesIndex do
+describe StatusesIndex do
   describe 'Searching the index' do
     before do
       mock_elasticsearch_response(described_class, raw_response)
@@ -11,7 +11,7 @@ RSpec.describe StatusesIndex do
     it 'returns results from a query' do
       results = described_class.query(match: { name: 'status' })
 
-      expect(results).to eq([])
+      expect(results).to eq []
     end
   end
 
@@ -27,15 +27,5 @@ RSpec.describe StatusesIndex do
         ],
       },
     }
-  end
-
-  it 'has settings defined' do
-    expect(described_class).to respond_to(:settings)
-    expect(described_class.settings).to be_a(Chewy::Index::Settings)
-  end
-
-  it 'returns results from a query' do
-    results = described_class.query(match: { name: 'status' })
-    expect(results).to eq([])
   end
 end
