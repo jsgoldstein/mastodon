@@ -78,14 +78,10 @@ class Importer::PublicStatusesIndexImporter < Importer::BaseImporter
 
   def local_votes_scope
     local_account_ids = Account.where(discoverable: true).pluck(:id)
-    local_status_ids = Status.where(visibility: :public).pluck(:id)
 
-    local_poll_ids = PollVote.where(account_id: local_account_ids)
-                             .where(poll_id: Poll.where(status_id: local_status_ids))
-                             .pluck(:poll_id)
-                             .uniq
-
-    Poll.where(id: local_poll_ids)
+    Poll.joins(:votes)
+        .where(poll_votes: { account_id: local_account_ids })
+        .where(status_id: Status.where(visibility: :public))
   end
 
   def local_statuses_scope
