@@ -8,7 +8,7 @@ describe RemoveFromPublicStatusesIndexWorker do
     let(:account_id) { account.id }
 
     before do
-      allow(Account).to receive(:find_by).with(account_id).and_return(account)
+      allow(Account).to receive(:find).with(account_id).and_return(account)
       allow(account).to receive(:remove_from_public_statuses_index!)
     end
 
