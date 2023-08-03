@@ -18,6 +18,7 @@ module Chewy
           redis.pipelined do |pipeline|
             @stash.each do |type, ids|
               pipeline.sadd("chewy:queue:#{type.name}", ids)
+              pipeline.sadd("chewy:queue:Public#{type.name}", ids) if type.name == "StatusesIndex"
             end
           end
         end
