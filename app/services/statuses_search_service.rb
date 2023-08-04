@@ -61,7 +61,18 @@ class StatusesSearchService < BaseService
 
   def non_publicly_searchable
     {
-      term: { searchable_by: @account.id },
+      bool: {
+        must: [
+          {
+            exists: {
+              field: 'searchable_by',
+            },
+          },
+          {
+            term: { searchable_by: @account.id },
+          },
+        ],
+      },
     }
   end
 
