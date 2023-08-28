@@ -2,11 +2,21 @@
 
 class AddToPublicStatusesIndexWorker
   include Sidekiq::Worker
+  include DatabaseHelper
+
+  sidekiq_options queue: 'pull'
 
   def perform(account_id)
-    account = Account.find(account_id)
-    return unless account&.discoverable?
+    with_primary do
+      @account = Account.find(account_id)
+    end
 
-    account.add_to_public_statuses_index!
+    return unless @account.indexable?
+
+    with_read_replica do
+      @account.add_to_public_statuses_index!
+    end
+  rescue ActiveRecord::RecordNotFound
+    true
   end
 end
