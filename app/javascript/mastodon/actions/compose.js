@@ -84,7 +84,6 @@ const messages = defineMessages({
   uploadErrorPoll:  { id: 'upload_error.poll', defaultMessage: 'File upload not allowed with polls.' },
   open: { id: 'compose.published.open', defaultMessage: 'Open' },
   published: { id: 'compose.published.body', defaultMessage: 'Post published.' },
-  saved: { id: 'compose.saved.body', defaultMessage: 'Post saved.' },
 });
 
 export const ensureComposeIsVisible = (getState, routerHistory) => {
@@ -245,7 +244,7 @@ export function submitCompose(routerHistory) {
       }
 
       dispatch(showAlert({
-        message: statusId === null ? messages.published : messages.saved,
+        message: messages.published,
         action: messages.open,
         dismissAfter: 10000,
         onClick: () => routerHistory.push(`/@${response.data.account.username}/${response.data.id}`),

@@ -3,7 +3,7 @@
 require 'rails_helper'
 
 describe AccountStatusesSearch do
-  let(:account) { Fabricate(:account, indexable: indexable) }
+  let(:account) { Fabricate(:account, discoverable: discoverable) }
 
   before do
     allow(Chewy).to receive(:enabled?).and_return(true)
@@ -15,8 +15,8 @@ describe AccountStatusesSearch do
       allow(account).to receive(:enqueue_remove_from_public_statuses_index)
     end
 
-    context 'when account is indexable' do
-      let(:indexable) { true }
+    context 'when account is discoverable' do
+      let(:discoverable) { true }
 
       it 'enqueues add_to_public_statuses_index and not to remove_from_public_statuses_index' do
         account.enqueue_update_public_statuses_index
@@ -25,8 +25,8 @@ describe AccountStatusesSearch do
       end
     end
 
-    context 'when account is not indexable' do
-      let(:indexable) { false }
+    context 'when account is not discoverable' do
+      let(:discoverable) { false }
 
       it 'enqueues remove_from_public_statuses_index and not to add_to_public_statuses_index' do
         account.enqueue_update_public_statuses_index
@@ -37,7 +37,7 @@ describe AccountStatusesSearch do
   end
 
   describe '#enqueue_add_to_public_statuses_index' do
-    let(:indexable) { true }
+    let(:discoverable) { nil }
     let(:worker) { AddToPublicStatusesIndexWorker }
 
     before do
@@ -51,7 +51,7 @@ describe AccountStatusesSearch do
   end
 
   describe '#enqueue_remove_from_public_statuses_index' do
-    let(:indexable) { false }
+    let(:discoverable) { nil }
     let(:worker) { RemoveFromPublicStatusesIndexWorker }
 
     before do
@@ -61,54 +61,6 @@ describe AccountStatusesSearch do
     it 'enqueues RemoveFromPublicStatusesIndexWorker' do
       account.enqueue_remove_from_public_statuses_index
       expect(worker).to have_received(:perform_async).with(account.id)
-    end
-  end
-
-  describe '#add_to_public_statuses_index!' do
-    let(:indexable) { true }
-
-    before do
-      PublicStatusesIndex.delete
-      PublicStatusesIndex.create
-    end
-
-    after do
-      PublicStatusesIndex.delete
-    end
-
-    it 'adds the statuses to the PublicStatusesIndex' do
-      expect(PublicStatusesIndex.filter(term: { account_id: account.id }).count).to eq(0)
-
-      status_1 = Fabricate(:status, account: account, text: 'status 1', visibility: :public)
-      status_2 = Fabricate(:status, account: account, text: 'status 2', visibility: :public)
-      account.add_to_public_statuses_index!
-
-      expect(PublicStatusesIndex.filter(term: { account_id: account.id }).count).to eq(2)
-    end
-  end
-
-  describe '#remove_from_public_statuses_index!' do
-    # indexable must be true in order for the statuses to start in the index
-    let(:indexable) { true }
-    let(:status_1) { Fabricate(:status, account: account, text: 'status 1') }
-    let(:status_2) { Fabricate(:status, account: account, text: 'status 2') }
-
-    before do
-      PublicStatusesIndex.delete
-      PublicStatusesIndex.create
-      PublicStatusesIndex.import([status_1, status_2])
-    end
-
-    after do
-      PublicStatusesIndex.delete
-    end
-
-    it 'removes the statuses from the PublicStatusesIndex' do
-      expect(PublicStatusesIndex.filter(term: { account_id: account.id }).count).to eq(2)
-
-      account.remove_from_public_statuses_index!
-
-      expect(PublicStatusesIndex.filter(term: { account_id: account.id }).count).to eq(0)
     end
   end
 end

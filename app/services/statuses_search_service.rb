@@ -15,19 +15,29 @@ class StatusesSearchService < BaseService
 
   def status_search_results
     definition = parsed_query.apply(
-      Chewy::Search::Request.new(StatusesIndex, PublicStatusesIndex).filter(
+      StatusesIndex.filter(
         bool: {
           should: [
             publicly_searchable,
             non_publicly_searchable,
           ],
-
           minimum_should_match: 1,
         }
       )
     )
 
-    results             = definition.collapse(field: :id).order(id: { order: :desc }).limit(@limit).offset(@offset).objects.compact
+    definition = definition.filter(term: { account_id: @options[:account_id] }) if @options[:account_id].present?
+
+    if @options[:min_id].present? || @options[:max_id].present?
+      range      = {}
+      range[:gt] = @options[:min_id].to_i if @options[:min_id].present?
+      range[:lt] = @options[:max_id].to_i if @options[:max_id].present?
+      definition = definition.filter(range: { id: range })
+    end
+
+    definition.instance_variable_get(:@parameters)[:indices].value[:indices] << PublicStatusesIndex
+
+    results             = definition.limit(@limit).offset(@offset).objects.compact
     account_ids         = results.map(&:account_id)
     account_domains     = results.map(&:account_domain)
     preloaded_relations = @account.relations_map(account_ids, account_domains)
@@ -39,7 +49,13 @@ class StatusesSearchService < BaseService
 
   def publicly_searchable
     {
-      term: { _index: PublicStatusesIndex.index_name },
+      bool: {
+        must_not: {
+          exists: {
+            field: 'searchable_by',
+          },
+        },
+      },
     }
   end
 
@@ -48,7 +64,9 @@ class StatusesSearchService < BaseService
       bool: {
         must: [
           {
-            term: { _index: StatusesIndex.index_name },
+            exists: {
+              field: 'searchable_by',
+            },
           },
           {
             term: { searchable_by: @account.id },
@@ -59,6 +77,6 @@ class StatusesSearchService < BaseService
   end
 
   def parsed_query
-    SearchQueryTransformer.new.apply(SearchQueryParser.new.parse(@query), current_account: @account)
+    SearchQueryTransformer.new.apply(SearchQueryParser.new.parse(@query))
   end
 end

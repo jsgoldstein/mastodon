@@ -11,7 +11,7 @@ module WebAppControllerConcern
   end
 
   def skip_csrf_meta_tags?
-    !(ENV['OMNIAUTH_ONLY'] == 'true' && Devise.omniauth_providers.length == 1) && current_user.nil?
+    current_user.nil?
   end
 
   def set_app_body_class

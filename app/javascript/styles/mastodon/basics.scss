@@ -164,7 +164,7 @@ body {
 a {
   &:focus {
     border-radius: 4px;
-    outline: $ui-button-focus-outline;
+    outline: $ui-button-icon-focus-outline;
   }
 
   &:focus:not(:focus-visible) {
