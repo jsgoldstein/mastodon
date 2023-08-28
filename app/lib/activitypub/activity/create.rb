@@ -4,8 +4,6 @@ class ActivityPub::Activity::Create < ActivityPub::Activity
   include FormattingHelper
 
   def perform
-    @account.schedule_refresh_if_stale!
-
     dereference_object!
 
     case @object['type']

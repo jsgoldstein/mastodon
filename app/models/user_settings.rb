@@ -16,8 +16,6 @@ class UserSettings
   setting :default_sensitive, default: false
   setting :default_privacy, default: nil, in: %w(public unlisted private)
 
-  setting_inverse_alias :indexable, :noindex
-
   namespace :web do
     setting :advanced_layout, default: false
     setting :trends, default: true
@@ -57,26 +55,31 @@ class UserSettings
   end
 
   def [](key)
-    definition = self.class.definition_for(key)
+    key = key.to_sym
 
-    raise KeyError, "Undefined setting: #{key}" if definition.nil?
+    raise KeyError, "Undefined setting: #{key}" unless self.class.definition_for?(key)
 
-    definition.value_for(key, @original_hash[definition.key])
+    if @original_hash.key?(key)
+      @original_hash[key]
+    else
+      self.class.definition_for(key).default_value
+    end
   end
 
   def []=(key, value)
-    definition = self.class.definition_for(key)
+    key = key.to_sym
 
-    raise KeyError, "Undefined setting: #{key}" if definition.nil?
+    raise KeyError, "Undefined setting: #{key}" unless self.class.definition_for?(key)
 
-    typecast_value = definition.type_cast(value)
+    setting_definition = self.class.definition_for(key)
+    typecast_value = setting_definition.type_cast(value)
 
-    raise ArgumentError, "Invalid value for setting #{definition.key}: #{typecast_value}" if definition.in.present? && definition.in.exclude?(typecast_value)
+    raise ArgumentError, "Invalid value for setting #{key}: #{typecast_value}" if setting_definition.in.present? && setting_definition.in.exclude?(typecast_value)
 
     if typecast_value.nil?
-      @original_hash.delete(definition.key)
+      @original_hash.delete(key)
     else
-      @original_hash[definition.key] = definition.value_for(key, typecast_value)
+      @original_hash[key] = typecast_value
     end
   end
 

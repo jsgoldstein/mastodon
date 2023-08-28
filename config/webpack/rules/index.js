@@ -1,7 +1,6 @@
 const babel = require('./babel');
 const css = require('./css');
 const file = require('./file');
-const materialIcons = require('./material_icons');
 const nodeModules = require('./node_modules');
 const tesseract = require('./tesseract');
 
@@ -9,7 +8,6 @@ const tesseract = require('./tesseract');
 // https://webpack.js.org/concepts/loaders/#loader-features
 // Lastly, process static files using file loader
 module.exports = {
-  materialIcons,
   file,
   tesseract,
   css,

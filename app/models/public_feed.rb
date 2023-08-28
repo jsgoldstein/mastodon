@@ -45,11 +45,11 @@ class PublicFeed
   end
 
   def local_only?
-    options[:local] && !options[:remote]
+    options[:local]
   end
 
   def remote_only?
-    options[:remote] && !options[:local]
+    options[:remote]
   end
 
   def account?

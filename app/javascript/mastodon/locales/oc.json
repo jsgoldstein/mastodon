@@ -160,6 +160,7 @@
   "conversation.open": "Veire la conversacion",
   "conversation.with": "Amb {names}",
   "copypaste.copied": "Copiat",
+  "copypaste.copy": "Copiar",
   "directory.federated": "Del fediverse conegut",
   "directory.local": "Solament de {domain}",
   "directory.new_arrivals": "Nòus-venguts",
