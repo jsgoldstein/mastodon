@@ -63,4 +63,27 @@ describe AccountStatusesSearch do
       expect(worker).to have_received(:perform_async).with(account.id)
     end
   end
+
+  describe '#add_to_public_statuses_index!' do
+    let(:indexable) { true }
+
+    before do
+      PublicStatusesIndex.delete
+      PublicStatusesIndex.create
+    end
+
+    after do
+      PublicStatusesIndex.delete
+    end
+
+    it 'adds the statuses to the PublicStatusesIndex' do
+      expect(PublicStatusesIndex.filter(term: { account_id: account.id }).count).to eq(0)
+
+      status_1 = Fabricate(:status, account: account, text: 'status 1', visibility: :public)
+      status_2 = Fabricate(:status, account: account, text: 'status 2', visibility: :public)
+      account.add_to_public_statuses_index!
+
+      expect(PublicStatusesIndex.filter(term: { account_id: account.id }).count).to eq(2)
+    end
+  end
 end
