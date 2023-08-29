@@ -15,7 +15,8 @@ if Rake::Task.task_defined?('spec:search')
     task :enable_search_specs do # rubocop:disable Rails/RakeEnvironment
       ENV['RUN_SEARCH_SPECS'] = 'true'
     end
+  end
 
-    Rake::Task['spec:search'].enhance ['spec:enable_search_specs']
+  Rake::Task['spec:search'].enhance ['spec:enable_search_specs']
   end
 end
