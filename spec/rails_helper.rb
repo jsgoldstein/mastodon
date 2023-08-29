@@ -76,6 +76,7 @@ end
 RSpec.configure do |config|
   # This is set before running spec:system, see lib/tasks/tests.rake
   config.filter_run_excluding type: :system unless RUN_SYSTEM_SPECS
+  config.filter_run_excluding type: :search unless RUN_SEARCH_SPECS
   config.fixture_path = Rails.root.join('spec', 'fixtures')
   config.use_transactional_fixtures = true
   config.order = 'random'
