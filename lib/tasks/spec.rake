@@ -18,5 +18,4 @@ if Rake::Task.task_defined?('spec:search')
   end
 
   Rake::Task['spec:search'].enhance ['spec:enable_search_specs']
-  end
 end
