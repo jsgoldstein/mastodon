@@ -152,6 +152,9 @@ jobs:
       - name: Load database schema
         run: './bin/rails db:create db:schema:load db:seed'
 
+      - name: get env
+        run: 'echo HERE ${RUN_SEARCH_SPECS} ${RUN_SYSTEM_SPECS}'
+
       - run: bundle exec rake rspec_chunked
 
   test-e2e:
