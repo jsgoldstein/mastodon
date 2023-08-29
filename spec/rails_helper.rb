@@ -75,7 +75,7 @@ end
 
 RSpec.configure do |config|
   # This is set before running spec:system, see lib/tasks/tests.rake
-  config.filter_run_excluding :type => lambda { |type|
+  config.filter_run_excluding type: lambda { |type|
     case type
     when :system
       !RUN_SYSTEM_SPECS
