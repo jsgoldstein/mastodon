@@ -11,7 +11,9 @@ if RUN_SYSTEM_SPECS
   ENV['STREAMING_API_BASE_URL'] = "http://localhost:#{STREAMING_PORT}"
 end
 
-SearchDataPopulator.populate_search_indices if RUN_SEARCH_SPECS
+if RUN_SEARCH_SPECS
+  # Include any configuration or setups specific to Elasticsearch tests here
+end
 
 require File.expand_path('../config/environment', __dir__)
 
@@ -34,6 +36,7 @@ Sidekiq.logger = nil
 # System tests config
 DatabaseCleaner.strategy = [:deletion]
 streaming_server_manager = StreamingServerManager.new
+search_data_populator = SearchDataPopulator.new
 
 Devise::Test::ControllerHelpers.module_eval do
   alias_method :original_sign_in, :sign_in
@@ -124,10 +127,13 @@ RSpec.configure do |config|
       Webpacker.compile
       streaming_server_manager.start(port: STREAMING_PORT)
     end
+
+    search_data_populator.populate_search_indices if RUN_SEARCH_SPECS
   end
 
   config.after :suite do
     streaming_server_manager.stop
+    search_data_populator.delete_search_indices if RUN_SEARCH_SPECS
   end
 
   config.around :each, type: :system do |example|
