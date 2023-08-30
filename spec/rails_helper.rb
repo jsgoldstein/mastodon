@@ -11,9 +11,7 @@ if RUN_SYSTEM_SPECS
   ENV['STREAMING_API_BASE_URL'] = "http://localhost:#{STREAMING_PORT}"
 end
 
-if RUN_SEARCH_SPECS
-  SearchDataPopulator.populate_search_indices
-end
+SearchDataPopulator.populate_search_indices if RUN_SEARCH_SPECS
 
 require File.expand_path('../config/environment', __dir__)
 
