@@ -8,7 +8,7 @@ describe AccountStatusesSearch do
   end
 
   describe 'a non-indexable account becoming indexable' do
-    let(:account) { Account.find_by(username: 'search_test_account_2') }
+    let(:account) { Account.find_by(indexable: false) }
 
     context 'when picking a non-indexable account' do
       it 'has no statuses in the PublicStatusesIndex' do
@@ -31,7 +31,7 @@ describe AccountStatusesSearch do
   end
 
   describe 'an indexable account becoming non-indexable' do
-    let(:account) { Account.find_by(username: 'search_test_account_1') }
+    let(:account) { Account.find_by(indexable: true) }
 
     context 'when picking an indexable account' do
       it 'has statuses in the PublicStatusesIndex' do
