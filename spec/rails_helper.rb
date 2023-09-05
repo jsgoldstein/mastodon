@@ -128,16 +128,11 @@ RSpec.configure do |config|
       streaming_server_manager.start(port: STREAMING_PORT)
     end
 
-    if RUN_SEARCH_SPECS
-      Chewy.strategy(:urgent)
-      search_data_manager.populate
-    end
+    Chewy.strategy(:urgent) if RUN_SEARCH_SPECS
   end
 
   config.after :suite do
     streaming_server_manager.stop
-
-    search_data_manager.destroy if RUN_SEARCH_SPECS
   end
 
   config.around :each, type: :system do |example|
@@ -156,6 +151,12 @@ RSpec.configure do |config|
     end
 
     self.use_transactional_tests = true
+  end
+
+  config.around :each, type: :search do |example|
+    search_data_manager.populate
+    example.run
+    search_data_manager.destroy
   end
 
   config.before(:each) do |example|
