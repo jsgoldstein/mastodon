@@ -12,7 +12,7 @@ if RUN_SYSTEM_SPECS
 end
 
 if RUN_SEARCH_SPECS
-  # Include any configuration or setups specific to Elasticsearch tests here
+  # Include any configuration or setups specific to search tests here
 end
 
 require File.expand_path('../config/environment', __dir__)
@@ -36,6 +36,7 @@ Sidekiq.logger = nil
 # System tests config
 DatabaseCleaner.strategy = [:deletion]
 streaming_server_manager = StreamingServerManager.new
+search_data_manager = SearchDataManager.new
 
 Devise::Test::ControllerHelpers.module_eval do
   alias_method :original_sign_in, :sign_in
@@ -126,10 +127,17 @@ RSpec.configure do |config|
       Webpacker.compile
       streaming_server_manager.start(port: STREAMING_PORT)
     end
+
+    if RUN_SEARCH_SPECS
+      Chewy.strategy(:urgent)
+      search_data_manager.prepare_test_data
+    end
   end
 
   config.after :suite do
     streaming_server_manager.stop
+
+    search_data_manager.cleanup_test_data if RUN_SEARCH_SPECS
   end
 
   config.around :each, type: :system do |example|
@@ -148,6 +156,12 @@ RSpec.configure do |config|
     end
 
     self.use_transactional_tests = true
+  end
+
+  config.around :each, type: :search do |example|
+    search_data_manager.populate_indexes
+    example.run
+    search_data_manager.remove_indexes
   end
 
   config.before(:each) do |example|

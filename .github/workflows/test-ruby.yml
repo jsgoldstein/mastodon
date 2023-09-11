@@ -32,7 +32,7 @@ jobs:
       SECRET_KEY_BASE: precompile_placeholder
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Set up Node.js
         uses: actions/setup-node@v3
@@ -127,7 +127,7 @@ jobs:
           - 3
           - 4
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - uses: actions/download-artifact@v3
         with:
@@ -202,7 +202,7 @@ jobs:
           - '.ruby-version'
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - uses: actions/download-artifact@v3
         with:
@@ -283,13 +283,10 @@ jobs:
           - 6379:6379
 
       elasticsearch:
-        image: docker.elastic.co/elasticsearch/elasticsearch:7.17.9
+        image: docker.elastic.co/elasticsearch/elasticsearch:7.17.13
         env:
-          # network.host: 0.0.0.0
-          # http.port: 9200
-          # discovery.seed_hosts: localhost
           discovery.type: single-node
-          # cluster.initial_master_nodes: node-1
+          xpack.security.enabled: false
         options: >-
           --health-cmd "curl http://localhost:9200/_cluster/health"
           --health-interval 10s
@@ -318,7 +315,7 @@ jobs:
           - '.ruby-version'
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - uses: actions/download-artifact@v3
         with:
