@@ -53,6 +53,10 @@ describe SearchQueryParser do
       expect(parser.clause).to parse('foo:bar')
     end
 
+    it 'consumes "+:foo:"' do
+      expect(parser.clause).to parse('+:foo:')
+    end
+
     it 'consumes "-foo:bar"' do
       expect(parser.clause).to parse('-foo:bar')
     end
@@ -93,6 +97,14 @@ describe SearchQueryParser do
 
     it 'consumes "foo:bar bar: hello"' do
       expect(parser.query).to parse('foo:bar bar: hello')
+    end
+
+    it 'consumes "foo +:bar:"' do
+      expect(parser.query).to parse('foo +:bar:')
+    end
+
+    it 'consumes "foo+:bar:"' do
+      expect(parser.query).to parse('foo+:bar:')
     end
   end
 end
