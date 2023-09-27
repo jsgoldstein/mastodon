@@ -7,7 +7,7 @@ class SearchQueryParser < Parslet::Parser
   rule(:space)     { match('\s').repeat(1) }
   rule(:operator)  { (str('+') | str('-')).as(:operator) }
   rule(:prefix)    { term >> colon }
-  rule(:shortcode) { (colon >> term >> colon.maybe).as(:shortcode) }
+  rule(:shortcode) { (operator.maybe >> colon >> term >> colon.maybe).as(:shortcode) }
   rule(:phrase)    { (quote >> (match('[^\s"]').repeat(1).as(:term) >> space.maybe).repeat >> quote).as(:phrase) }
   rule(:clause)    { (operator.maybe >> prefix.maybe.as(:prefix) >> (phrase | term | shortcode)).as(:clause) | prefix.as(:clause) | quote.as(:junk) }
   rule(:query)     { (clause >> space.maybe).repeat.as(:query) }

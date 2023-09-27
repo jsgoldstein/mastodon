@@ -32,6 +32,10 @@ describe SearchQueryParser do
     it 'consumes ":foo:"' do
       expect(parser.shortcode).to parse(':foo:')
     end
+
+    it 'consumes "+:foo:"' do
+      expect(parser.shortcode).to parse('+:foo:')
+    end
   end
 
   context 'with phrase' do
