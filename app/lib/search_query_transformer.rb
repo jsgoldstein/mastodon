@@ -238,13 +238,13 @@ class SearchQueryTransformer < Parslet::Transform
   rule(clause: subtree(:clause)) do
     prefix   = clause[:prefix][:term].to_s if clause[:prefix]
     operator = clause[:operator]&.to_s
-    if clause[:phrase]
-      term = clause[:phrase].map { |term| term[:term].to_s }.join(' ')
-    elsif clause[:shortcode]
-      term = clause[:shortcode][:term].to_s
-    else
-      term = clause[:term].to_s
-    end
+    term = if clause[:phrase]
+             clause[:phrase].map { |term| term[:term].to_s }.join(' ')
+           elsif clause[:shortcode]
+             clause[:shortcode][:term].to_s
+           else
+             clause[:term].to_s
+           end
 
     if clause[:prefix] && SUPPORTED_PREFIXES.include?(prefix)
       PrefixClause.new(prefix, operator, term, current_account: current_account)
