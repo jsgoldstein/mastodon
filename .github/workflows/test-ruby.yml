@@ -311,8 +311,11 @@ jobs:
       matrix:
         ruby-version:
           - '.ruby-version'
+          - '.ruby-version'
         search-image:
           - docker.elastic.co/elasticsearch/elasticsearch:7.17.13
+          - docker.elastic.co/elasticsearch/elasticsearch:8.10.2
+          - opensearchproject/opensearch:2
 
     steps:
       - uses: actions/checkout@v4
