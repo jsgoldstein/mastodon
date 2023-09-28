@@ -286,7 +286,7 @@ jobs:
         image: ${{ matrix.search-image}}
         env:
           discovery.type: single-node
-          # xpack.security.enabled: false
+          xpack.security.enabled: false
         options: >-
           --health-cmd "curl http://localhost:9200/_cluster/health"
           --health-interval 10s
@@ -294,6 +294,7 @@ jobs:
           --health-retries 10
         ports:
           - 9200:9200
+          - 9600:9600
 
     env:
       DB_HOST: localhost
