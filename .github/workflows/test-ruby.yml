@@ -282,11 +282,11 @@ jobs:
         ports:
           - 6379:6379
 
-      elasticsearch:
+      search:
         image: ${{ matrix.search-image}}
         env:
           discovery.type: single-node
-          xpack.security.enabled: false
+          # xpack.security.enabled: false
         options: >-
           --health-cmd "curl http://localhost:9200/_cluster/health"
           --health-interval 10s
