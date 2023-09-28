@@ -283,10 +283,10 @@ jobs:
           - 6379:6379
 
       search:
-        image: ${{ matrix.search-image}}
+        image: ${{ matrix.search-image }}
         env:
           discovery.type: single-node
-          xpack.security.enabled: false
+          ${{ matrix.search-env }}: false
         options: >-
           --health-cmd "curl http://localhost:9200/_cluster/health"
           --health-interval 10s
@@ -316,11 +316,14 @@ jobs:
           - '.ruby-version'
         search-image:
           - docker.elastic.co/elasticsearch/elasticsearch:7.17.13
+        search-env:
+          - xpack.security.enabled
         include:
           - ruby-version: '.ruby-version'
             search-image: docker.elastic.co/elasticsearch/elasticsearch:8.10.2
           - ruby-version: '.ruby-version'
             search-image: opensearchproject/opensearch:2
+            search-env: ''
 
     steps:
       - uses: actions/checkout@v4
